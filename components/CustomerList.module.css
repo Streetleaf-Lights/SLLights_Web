@@ -1,0 +1,451 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 24px 40px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  color: var(--text);
+}
+
+.accent { color: var(--accent); }
+
+.main {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 1100px;
+}
+
+/* ── Dropdown ── */
+.dropdownRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dropdownLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.selectWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.select {
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  padding: 10px 44px 10px 16px;
+  cursor: pointer;
+  outline: none;
+  min-width: 280px;
+  transition: border-color 0.15s;
+}
+
+.select:focus { border-color: var(--accent); }
+.select:hover { border-color: var(--border-bright); background: var(--surface-2); }
+
+.select option {
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.selectArrow {
+  position: absolute;
+  right: 14px;
+  color: var(--accent);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* ── Customer panel ── */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Hero ── */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 28px 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.heroAvatar {
+  width: 64px;
+  height: 64px;
+  background: var(--accent-dim);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+
+.heroInfo { flex: 1; min-width: 180px; }
+
+.heroName {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.heroMeta {
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--text-dim);
+  align-items: center;
+}
+
+.heroMeta span, .heroMeta a {
+  padding: 0 10px;
+  border-right: 1px solid var(--border);
+}
+.heroMeta span:first-child, .heroMeta a:first-child { padding-left: 0; }
+.heroMeta span:last-child, .heroMeta a:last-child { border-right: none; }
+
+.heroStats {
+  display: flex;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.heroStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 24px;
+  background: var(--bg);
+  gap: 5px;
+}
+
+.heroStatN {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+}
+
+.heroStatL {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--text-dim);
+}
+
+.tierBadge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  border: 1px solid;
+  padding: 4px 10px;
+  align-self: flex-start;
+}
+
+/* ── Sections ── */
+.section { display: flex; flex-direction: column; gap: 14px; }
+
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--text-dim);
+}
+
+.empty {
+  font-size: 12px;
+  color: var(--text-dim);
+  padding: 12px 0;
+}
+
+.empty code {
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 1px 5px;
+}
+
+.addressBlock {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+}
+
+/* ── Summary table ── */
+.summaryTable {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  background: var(--border);
+  gap: 1px;
+}
+
+.summaryCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: var(--surface);
+  gap: 8px;
+}
+
+.summaryValue {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.summaryLabel {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--text-dim);
+}
+
+.summarySep { width: 1px; background: var(--border); flex-shrink: 0; }
+.projectGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.projectCard {
+  background: var(--surface);
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: background 0.15s;
+}
+
+.projectCard:hover { background: var(--surface-2); }
+
+.projectHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.projectNameLink {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.projectNameLink:hover { color: var(--accent); text-decoration: underline; }
+
+.projectName {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  border: 1px solid;
+  padding: 3px 7px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.projectDesc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.projectMeta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.projectMeta b { color: var(--text-muted); font-weight: 500; }
+
+.projectStats {
+  display: flex;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+.projectStat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 8px;
+  background: var(--bg);
+  gap: 4px;
+}
+
+.projectStatN {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+}
+
+.projectStatL {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* ── Contacts ── */
+.contactGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.contactCard {
+  background: var(--surface);
+  padding: 18px 22px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: background 0.15s;
+}
+
+.contactCard:hover { background: var(--surface-2); }
+
+.contactAvatar {
+  width: 34px;
+  height: 34px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-bright);
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contactInfo { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+
+.contactName {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.contactRole {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.contactLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 11px;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+
+.link:hover { opacity: 1; text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .main { padding: 20px; }
+  .hero { padding: 20px; }
+  .heroName { font-size: 20px; }
+  .heroStats { width: 100%; }
+  .heroStat { flex: 1; padding: 10px; }
+  .select { min-width: 0; width: 100%; }
+  .dropdownRow { flex-direction: column; align-items: flex-start; }
+}
