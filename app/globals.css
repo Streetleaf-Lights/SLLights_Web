@@ -1,24 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;700&family=Cabin:wght@400;600;700&display=swap');
 
 :root {
-  --bg: #0a0c0f;
-  --surface: #111418;
-  --surface-2: #181c22;
-  --border: #242930;
-  --border-bright: #323a44;
-  --text: #e8ecf0;
-  --text-muted: #6b7685;
-  --text-dim: #3d4755;
-  --accent: #00d4ff;
-  --accent-dim: #003d4d;
-  --green: #00ff88;
-  --green-dim: #003322;
-  --yellow: #ffcc00;
-  --yellow-dim: #332800;
-  --red: #ff4455;
-  --red-dim: #330011;
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --surface-2: #f5f7fa;
+  --border: #dde1e7;
+  --border-bright: #c4cad4;
+  --text: #0f1318;
+  --text-muted: #5a6472;
+  --text-dim: #9aa3b0;
+  --accent: #00b1ae;
+  --accent-dim: #d0f0ef;
+  --green: #00a855;
+  --green-dim: #d0f5e5;
+  --yellow: #cc9900;
+  --yellow-dim: #fff5cc;
+  --red: #cc2233;
+  --red-dim: #fde8ea;
+  --font-body: 'Roboto Slab', serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --font-display: 'Syne', sans-serif;
+  --font-display: 'Cabin', sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,10 +27,18 @@
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 13px;
   line-height: 1.6;
   min-height: 100vh;
+}
+
+.siteHeader {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
 }
 
 /* Scrollbar */

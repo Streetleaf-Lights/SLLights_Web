@@ -45,7 +45,7 @@ export async function azureFetch(url: string): Promise<unknown> {
 /**
  * Make an authenticated POST to any Azure API Management endpoint.
  */
-export async function azurePost(url: string, body: unknown): Promise<unknown> {
+export async function azurePost(url: string, body: unknown, fetchOptions?: RequestInit): Promise<unknown> {
   const key = getSubscriptionKey();
 
   const res = await fetch(url, {
@@ -55,6 +55,7 @@ export async function azurePost(url: string, body: unknown): Promise<unknown> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
+    ...fetchOptions,
   });
 
   if (!res.ok) {

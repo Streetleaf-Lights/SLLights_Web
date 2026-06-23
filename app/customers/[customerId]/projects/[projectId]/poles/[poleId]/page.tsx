@@ -1,5 +1,5 @@
 import { getCustomers } from "@/lib/customers";
-import PoleDetailClient from "@/components/PoleDetailClient";
+import PoleDetail from "@/components/PoleDetail";
 import { notFound } from "next/navigation";
 
 export default async function PolePage({
@@ -14,16 +14,11 @@ export default async function PolePage({
   const project = customer.projects.find((p) => p.id === params.projectId);
   if (!project) notFound();
 
-  if (!["pole-1", "pole-2"].includes(params.poleId)) notFound();
-
-  const poleNumber = params.poleId === "pole-1" ? 1 : 2;
-
   return (
-    <PoleDetailClient
+    <PoleDetail
       customer={customer}
       project={project}
       poleId={params.poleId}
-      poleName={`Pole ${poleNumber}`}
     />
   );
 }

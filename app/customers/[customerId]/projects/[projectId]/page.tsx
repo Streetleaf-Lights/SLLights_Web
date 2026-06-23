@@ -4,7 +4,7 @@
  */
 
 import { getCustomers } from "@/lib/customers";
-import ProjectDetailClient from "@/components/ProjectDetailClient";
+import ProjectDetail from "@/components/ProjectDetail";
 import { notFound } from "next/navigation";
 
 export default async function ProjectPage({
@@ -19,5 +19,5 @@ export default async function ProjectPage({
   const project = customer.projects.find((p) => p.id === params.projectId);
   if (!project) notFound();
 
-  return <ProjectDetailClient customer={customer} project={project} />;
+  return <ProjectDetail customer={customer} project={project} />;
 }

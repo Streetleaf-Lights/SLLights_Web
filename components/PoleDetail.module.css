@@ -6,14 +6,14 @@
 /* ── Top bar ── */
 .topbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   padding: 16px 40px;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   position: sticky;
   top: 0;
   z-index: 10;
+  gap: 10px;
 }
 
 .breadcrumb {
@@ -21,6 +21,25 @@
   align-items: center;
   gap: 8px;
   font-size: 12px;
+}
+
+.navLink {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.navLink:hover {
+  opacity: 0.75;
+}
+
+.accent {
+  color: var(--accent);
 }
 
 .crumbLink {
@@ -60,12 +79,13 @@
 /* ── Hero ── */
 .hero {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 24px;
-  padding: 32px 36px;
+  padding: 28px 32px;
   background: var(--surface);
   border: 1px solid var(--border);
   flex-wrap: wrap;
+  position: relative;
 }
 
 .heroIcon {
@@ -156,6 +176,14 @@
 .gaugeGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.gaugeGrid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);

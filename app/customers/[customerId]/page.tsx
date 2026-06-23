@@ -4,8 +4,8 @@
  */
 
 import { getCustomers } from "@/lib/customers";
-import CustomerDetailClient from "@/components/CustomerDetailClient";
 import { notFound } from "next/navigation";
+import CustomerDetail from "@/components/CustomerDetail";
 
 export async function generateStaticParams() {
   const customers = await getCustomers();
@@ -16,5 +16,5 @@ export default async function CustomerPage({ params }: { params: { customerId: s
   const customers = await getCustomers();
   const customer = customers.find((c) => c.id === params.customerId) ?? null;
   if (!customer) notFound();
-  return <CustomerDetailClient customer={customer} />;
+  return <CustomerDetail customer={customer} />;
 }
