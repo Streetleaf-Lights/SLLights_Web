@@ -132,7 +132,9 @@ function PoleStatusChart({ statuses }: { statuses: StatusRow[] }) {
             min: 0,
             max: 100,
             grid: { color: gridColor },
-            ticks: { color: tickColor, font: { size: 11 }, callback: (v: number) => v + "%" },
+            ticks: { color: tickColor, font: { size: 11 }, callback: function(tickValue) {
+                    return tickValue + "%";
+                  } },
             border: { color: gridColor },
           },
         },
