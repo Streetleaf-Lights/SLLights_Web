@@ -90,11 +90,14 @@ export default function CustomerDetail({ customer }: { customer: Customer }) {
   
   const [deviceCountMap, setDeviceCountMap] = useState<Record<string, number | null | undefined>>({});
   const [isWorkingCountMap, setIsWorkingCountMap] = useState<Record<string, number | null | undefined>>({});
+  const sortedProjects = [...customer.projects].sort((a, b) =>
+    String(a.name).localeCompare(String(b.name))
+  );
   useEffect(() => {
-    if (customer.projects.length === 0) return;
+    if (sortedProjects.length === 0) return;
     setDeviceCountMap({});
     setIsWorkingCountMap({});
-    customer.projects.forEach((p) => {
+    sortedProjects.forEach((p) => {
       getProjectData(p.id).then((data) => {
         setDeviceCountMap((prev) => ({
           ...prev,
@@ -105,12 +108,12 @@ export default function CustomerDetail({ customer }: { customer: Customer }) {
     });
   }, [customer.id]);
 
-  const allLoaded = customer.projects.every((p) => deviceCountMap[p.id] !== undefined);
-  const totalLights = customer.projects.reduce((sum, p) => {
+  const allLoaded = sortedProjects.every((p) => deviceCountMap[p.id] !== undefined);
+  const totalLights = sortedProjects.reduce((sum, p) => {
     const n = deviceCountMap[p.id];
     return typeof n === "number" ? sum + n : sum;
   }, 0);
-  const totalWorking = customer.projects.reduce((sum, p) => {
+  const totalWorking = sortedProjects.reduce((sum, p) => {
     const n = isWorkingCountMap[p.id];
     return typeof n === "number" ? sum + n : sum;
   }, 0);
@@ -194,7 +197,7 @@ export default function CustomerDetail({ customer }: { customer: Customer }) {
         </div>
         <div className={styles.heroStats}>
           <div className={styles.heroStat}>
-            <span className={styles.heroStatN}>{customer.projects.length}{customer.projects[0].name}</span>
+            <span className={styles.heroStatN}>{sortedProjects.length}</span>
             <span className={styles.heroStatL}>PROJECTS</span>
           </div>
         </div>
@@ -231,11 +234,11 @@ export default function CustomerDetail({ customer }: { customer: Customer }) {
         {/* Projects */}
         <section className={styles.section}>
           <div className={styles.sectionLabel}>PROJECTS</div>
-          {customer.projects.length === 0 ? (
+          {sortedProjects.length === 0 ? (
             <div className={styles.empty}>No projects on record.</div>
           ) : (
             <div className={styles.projectGrid}>
-              {customer.projects.map((p) => (
+              {sortedProjects.map((p) => (
                 <ProjectCard key={p.id} project={p} customerId={customer.id} cust_q={cust_qQuery ?? undefined} pole_q={pole_qQuery ?? undefined} deviceCount={deviceCountMap[p.id]} isWorkingCount={isWorkingCountMap[p.id]} />
               ))}
             </div>
