@@ -6,6 +6,7 @@
 import { getCustomers } from "@/lib/customers";
 import { notFound } from "next/navigation";
 import CustomerDetail from "@/components/CustomerDetail";
+import { Suspense } from "react";
 
 export async function generateStaticParams() {
   const customers = await getCustomers();
@@ -16,5 +17,9 @@ export default async function CustomerPage({ params }: { params: { customerId: s
   const customers = await getCustomers();
   const customer = customers.find((c) => c.id === params.customerId) ?? null;
   if (!customer) notFound();
-  return <CustomerDetail customer={customer} />;
+  return (
+    <Suspense fallback="Loading...">
+      <CustomerDetail customer={customer} />
+    </Suspense>
+  );
 }

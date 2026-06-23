@@ -6,6 +6,7 @@
 import { getCustomers } from "@/lib/customers";
 import ProjectDetail from "@/components/ProjectDetail";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function ProjectPage({
   params,
@@ -19,5 +20,9 @@ export default async function ProjectPage({
   const project = customer.projects.find((p) => p.id === params.projectId);
   if (!project) notFound();
 
-  return <ProjectDetail customer={customer} project={project} />;
+  return (
+      <Suspense fallback="Loading...">
+        <ProjectDetail customer={customer} project={project} />
+      </Suspense>
+    );
 }

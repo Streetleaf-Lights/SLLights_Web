@@ -1,6 +1,7 @@
 import { getCustomers } from "@/lib/customers";
 import PoleDetail from "@/components/PoleDetail";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function PolePage({
   params,
@@ -14,11 +15,13 @@ export default async function PolePage({
   const project = customer.projects.find((p) => p.id === params.projectId);
   if (!project) notFound();
 
-  return (
-    <PoleDetail
-      customer={customer}
-      project={project}
-      poleId={params.poleId}
-    />
-  );
+    return (
+        <Suspense fallback="Loading...">
+          <PoleDetail
+            customer={customer}
+            project={project}
+            poleId={params.poleId}
+          />
+        </Suspense>
+      );
 }
