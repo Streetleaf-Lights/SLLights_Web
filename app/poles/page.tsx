@@ -4,14 +4,12 @@
  */
 
 import { Suspense } from "react";
-import { getDevices } from "@/lib/customers";
 import PoleSearch from "@/components/PoleSearch";
 
-export default async function PolesPage() {
-  const devices = await getDevices();
+export default function PolesPage() {
   return (
     <Suspense fallback="Loading...">
-      <PoleSearch devices={devices} />
+      <PoleSearch />
     </Suspense>
   );
 }

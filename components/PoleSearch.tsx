@@ -350,12 +350,21 @@ function MultiplePolePanel({ devices, committedQuery }: { devices: Device[]; com
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function PoleSearch({ devices }: { devices: Device[] }) {
+export default function PoleSearch() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const [devices, setDevices] = useState<Device[] | undefined>(undefined);
   const [inputValue, setInputValue] = useState(() => searchParams.get("q") ?? "");
+  const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/azure/devices")
+      .then((res) => res.json())
+      .then((data) => setDevices(data))
+      .catch(() => setDevices([]));
+  }, []);
 
   useEffect(() => {
     if (!searchParams.has("q")) setInputValue("");
@@ -364,7 +373,11 @@ export default function PoleSearch({ devices }: { devices: Device[] }) {
   const committedQuery = searchParams.get("q") ?? "";
   const submitted = searchParams.has("q");
 
-  const matches = submitted && committedQuery.trim()
+  useEffect(() => {
+    setIsSearching(false);
+  }, [committedQuery]);
+
+  const matches = submitted && committedQuery.trim().length >= 3 && devices
     ? devices.filter((d) =>
         String(d.poleNumber).toLowerCase().includes(committedQuery.trim().toLowerCase())
       )
@@ -380,6 +393,7 @@ export default function PoleSearch({ devices }: { devices: Device[] }) {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
     setInputValue(value);
+    setIsSearching(true);
     commitSearch(value);
   }
 
@@ -434,12 +448,18 @@ export default function PoleSearch({ devices }: { devices: Device[] }) {
           </form>
         </div>
 
-        {submitted && committedQuery.trim() && (
-          matches.length === 0
-            ? <div className={styles.empty}>No matching poles found. Please try a different search.</div>
-            : matches.length === 1
-              ? <SinglePolePanel device={matches[0]} />
-              : <MultiplePolePanel devices={matches} committedQuery={committedQuery} />
+        {devices === undefined ? (
+          <div className={styles.empty}>Loading…</div>
+        ) : submitted && committedQuery.trim() && (
+          isSearching
+            ? <div className={styles.empty}>Searching…</div>
+            : committedQuery.trim().length < 3
+              ? <div className={styles.empty}>Enter at least 3 characters to search.</div>
+              : matches.length === 0
+                ? <div className={styles.empty}>No matching poles found. Please try a different search.</div>
+                : matches.length === 1
+                  ? <SinglePolePanel device={matches[0]} />
+                  : <MultiplePolePanel devices={matches} committedQuery={committedQuery} />
         )}
       </div>
     </div>
