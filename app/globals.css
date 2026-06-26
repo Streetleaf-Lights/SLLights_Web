@@ -41,6 +41,43 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.siteBody {
+  display: flex;
+  min-height: calc(100vh - /* your header height */ 64px);
+}
+
+.siteNav {
+  width: 150px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--surface);
+}
+
+.siteNavLink {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--green);
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.siteNavLink:hover {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.siteMain {
+  flex: 1;
+  min-width: 0;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }

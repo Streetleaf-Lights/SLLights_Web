@@ -72,3 +72,25 @@ export interface Customer {
   contacts: ContactInfo[];
   projects: Project[];
 }
+
+export enum UserRole {
+  User = "User",
+  SLAdmin = "SL Admin",
+  CustomerAdmin = "Customer Admin",
+}
+
+export enum UserStatus {
+  Active = "Active",
+  Pending = "Pending",
+  Inactive = "Inactive",
+}
+
+export interface User {
+  name: string;
+  email: string;
+  password: string;
+  status: UserStatus;
+  role: UserRole;
+  customerId: string;
+  customerName: string;
+}

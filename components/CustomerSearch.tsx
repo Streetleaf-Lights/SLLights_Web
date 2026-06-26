@@ -308,14 +308,9 @@ export default function CustomerSearch({ customers }: { customers: Customer[] })
     <div className={styles.page}>
       <header className={styles.topbar}>
         <div className={styles.breadcrumb}>
-          <Link href="/customers" className={styles.navLink}>
+          <span className={styles.navText}>
             <span className={styles.accent}>◈</span> CUSTOMERS
-          </Link>
-        </div>
-        <div className={styles.breadcrumb} style={{ borderTop: "1px solid var(--border)", paddingTop: "10px" }}>
-          <Link href="/poles" className={styles.navLink}>
-            <span className={styles.accent}>◈</span> POLES
-          </Link>
+          </span>
         </div>
       </header>
 

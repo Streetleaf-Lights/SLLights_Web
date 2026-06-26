@@ -9,7 +9,7 @@
  */
 
 import { azureFetch, azurePost } from "./azure-auth";
-import type { Customer, Device, DeviceStatus, Project } from "./types";
+import type { Customer, Device, DeviceStatus, Project, User } from "./types";
 
 const BASE = process.env.AZURE_APIM_BASE_URL ?? "";
 
@@ -17,10 +17,20 @@ export function apimUrl(path: string) {
   return `${BASE.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
 }
 
+export async function getUsers(): Promise<User[]> {
+  try {
+    const data = await azurePost(apimUrl("/GetUsers"), {}) as { value?: User[] } | User[];
+    if (Array.isArray(data)) return data;
+    return (data as { value?: User[] }).value ?? [];
+  } catch (e) {
+    console.error("getUsers error:", e);
+    return [];
+  }
+}
+
 export async function getCustomers(): Promise<Customer[]> {
   try {
     const data = await azurePost(apimUrl("/GetCustomers2"), { }) as { value?: Customer[] } | Customer[];
-    // console.log("getCustomers data:", (data as Customer[])[0]?.name);
     if (Array.isArray(data)) return data;
     return (data as { value?: Customer[] }).value ?? [];
   } catch (e) {

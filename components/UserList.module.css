@@ -4,6 +4,7 @@
 }
 
 /* ── Top bar ── */
+
 .topbar {
   display: flex;
   flex-direction: column;
@@ -46,11 +47,10 @@
 
 .navLink:hover {
   opacity: 0.75;
+  color: var(--text-dim);
 }
 
-.accent {
-  color: var(--accent);
-}
+.accent { color: var(--accent); }
 
 .crumbLink {
   color: var(--text-muted);

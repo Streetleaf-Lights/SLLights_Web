@@ -24,6 +24,16 @@
   font-size: 12px;
 }
 
+.navText {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
 .navLink {
   font-family: var(--font-display);
   font-weight: 800;

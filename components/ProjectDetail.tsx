@@ -130,16 +130,18 @@ export default function ProjectDetail({ customer, project }: Props) {
       {/* Top bar */}
       <header className={styles.topbar}>
         <div className={styles.breadcrumb}>
-          <Link href="/customers" className={styles.navLink}>
-            <span className={styles.accent}>◈</span> CUSTOMERS
-          </Link>
           {cust_qQuery && (
+            <>
+            <span className={styles.navText}>
+              <span className={styles.accent}>◈</span> CUSTOMERS
+            </span>
             <Link
               href={backHref}
               className={styles.crumbLink}
             >
               ← Customer Search: "{cust_qQuery}"
             </Link>
+            </>
           )}
           <span className={styles.crumbSep}>›</span>
           <Link
@@ -151,19 +153,19 @@ export default function ProjectDetail({ customer, project }: Props) {
           <span className={styles.crumbSep}>›</span>
           <span className={styles.crumbCurrent}>{project.name}</span>
         </div>
-        <div className={styles.breadcrumb} style={{ borderTop: "1px solid var(--border)", paddingTop: "10px" }}>
-          <Link href="/poles" className={styles.navLink}>
-            <span className={styles.accent}>◈</span> POLES
-          </Link>
-          {pole_qQuery && (
-            <Link
-              href={`/poles?q=${encodeURIComponent(pole_qQuery)}`}
-              className={styles.crumbLink}
-            >
-              ← Pole Search: "{pole_qQuery}"
-            </Link>
-          )}
-        </div>
+        {pole_qQuery && (
+          <div className={styles.breadcrumb} style={{ borderTop: "1px solid var(--border)", paddingTop: "10px" }}>
+            <span className={styles.navText}>
+              <span className={styles.accent}>◈</span> POLES
+            </span>
+              <Link
+                href={`/poles?q=${encodeURIComponent(pole_qQuery)}`}
+                className={styles.crumbLink}
+              >
+                ← Pole Search: "{pole_qQuery}"
+              </Link>
+          </div>
+        )}
       </header>
 
       <div className={styles.body}>
