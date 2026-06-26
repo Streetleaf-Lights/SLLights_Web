@@ -23,6 +23,7 @@ export interface DeviceStatus {
 export interface Device {
   id: string;
   poleNumber: string | number;
+  locationId: string | number;
   customerId: string;
   customer?: Customer;
   projectId: string;

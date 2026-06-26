@@ -139,17 +139,68 @@ function PoleStatusChart({ statuses }: { statuses: StatusRow[] }) {
     </>
   );
 }
+function PoleMap({ lat, long }: { lat: number; long: number }) {
+  const mapRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+    if (!apiKey || !mapRef.current) return;
+
+    const initMap = () => {
+      if (!mapRef.current) return;
+      const map = new (window as any).google.maps.Map(mapRef.current, {
+        center: { lat, lng: long },
+        zoom: 17,
+        mapTypeId: "satellite",
+      });
+      new (window as any).google.maps.Marker({
+        position: { lat, lng: long },
+        map,
+        title: `Lat: ${lat}, Long: ${long}`,
+      });
+    };
+
+    const scriptId = "google-maps-script";
+    if ((window as any).google?.maps) {
+      initMap();
+      return;
+    }
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+      script.async = true;
+      script.onload = initMap;
+      document.head.appendChild(script);
+    } else {
+      document.getElementById(scriptId)!.addEventListener("load", initMap);
+    }
+  }, [lat, long]);
+
+  return (
+    <div ref={mapRef} style={{ width: "100%", height: 360, border: "1px solid var(--border)" }} />
+  );
+}
 // ── Single pole panel ─────────────────────────────────────────────────────────
 
 function SinglePolePanel({ device }: { device: Device }) {
   const [statuses, setStatuses] = useState<Record<string, unknown> | undefined>(undefined);
 
-  useEffect(() => {
-    if (device.poleNumber != null) {
-      getDeviceStatuses(String(device.poleNumber)).then(setStatuses);
+  // SinglePolePanel
+useEffect(() => {
+  if (device.poleNumber == null) return;
+
+  getDeviceStatuses(String(device.poleNumber)).then((result) => {
+    const isEmpty = Array.isArray(result)
+      ? result.length === 0
+      : Object.keys(result).length === 0;
+
+    if (isEmpty && device.locationId != null) {
+      return getDeviceStatuses(String(device.locationId));
     }
-  }, [device.poleNumber]);
+    return result;
+  }).then(setStatuses);
+}, [device.poleNumber, device.locationId]);
 
   const isOnline = device.isOnline;
   const isWorking = device.isWorking ?? 0;
@@ -263,10 +314,23 @@ function SinglePolePanel({ device }: { device: Device }) {
         <div className={poleStyles.sectionLabel}>POLE STATUS</div>
         {statuses === undefined ? (
           <div className={poleStyles.gaugeCard} style={{ color: "var(--text-dim)" }}>…</div>
+        ) : Array.isArray(statuses) && statuses.length === 0 ? (
+          <div style={{ fontSize: 12, color: "var(--text-dim)" }}>The statuses are not available.</div>
         ) : (
           <PoleStatusChart statuses={Array.isArray(statuses) ? statuses as StatusRow[] : [statuses as StatusRow]} />
         )}
       </div>
+      {/* Map */}
+      {device.lat != null && device.long != null && (
+        <div className={poleStyles.section}>
+          <div className={poleStyles.sectionLabel}>LOCATION</div>
+          {device.lat === 0 || device.long === 0 ? (
+            <div style={{ fontSize: 12, color: "var(--text-dim)" }}>The location map is not available.</div>
+          ) : (
+            <PoleMap lat={device.lat} long={device.long} />
+          )}
+        </div>
+      )}
     </div>
   );
 }

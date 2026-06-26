@@ -223,11 +223,18 @@ export default function PoleDetail({ customer, project, poleId }: Props) {
   useEffect(() => {
     getDeviceData(poleId).then((data) => {
       setDevice(data);
-      if (data?.poleNumber != null) {
-      getDeviceStatuses(String(data.poleNumber)).then((statuses) => {
-        setStatuses(statuses);
-      });
-    }
+      if (data?.poleNumber == null) return;
+
+      getDeviceStatuses(String(data.poleNumber)).then((result) => {
+        const isEmpty = Array.isArray(result)
+          ? result.length === 0
+          : Object.keys(result).length === 0;
+
+        if (isEmpty && data.locationId != null) {
+          return getDeviceStatuses(String(data.locationId));
+        }
+        return result;
+      }).then(setStatuses);
     });
   }, [poleId]);
 
