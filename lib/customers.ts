@@ -53,7 +53,7 @@ export async function postUser(
   }
 }
 
-export async function deleteUser(id: number): Promise<{ success: boolean; error?: string }> {
+export async function deleteUser(id: string): Promise<{ success: boolean; error?: string }> {
   try {
     const res = await fetch(`/api/azure/delete-user?id=${id}`, {
       method: "DELETE",

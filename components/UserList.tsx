@@ -20,6 +20,8 @@ export default function UserList() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | undefined>(undefined);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [confirmDeleteName, setConfirmDeleteName] = useState<string>("");
 
   async function fetchUsers() {
     setLoading(true);
@@ -132,7 +134,7 @@ export default function UserList() {
                       <td>
                         <button
                           className={styles.deleteButton}
-                          onClick={() => handleDelete(user.id)}
+                          onClick={() => { setConfirmDeleteId(user.id); setConfirmDeleteName(user.name); }}
                           disabled={deletingId === user.id}
                         >
                           {deletingId === user.id ? "…" : "DELETE"}
@@ -197,6 +199,36 @@ export default function UserList() {
               </button>
               <button className={styles.submitButton} onClick={handleSubmit} disabled={submitting}>
                 {submitting ? "SUBMITTING…" : "SUBMIT"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Confirm Delete Modal */}
+      {confirmDeleteId !== null && (
+        <div className={styles.modalOverlay} onClick={() => setConfirmDeleteId(null)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <span className={styles.sectionLabel}>DELETE USER</span>
+            </div>
+            <div className={styles.modalBody}>
+              <p style={{ margin: 0, color: "var(--text)" }}>
+                Are you sure you want to delete <strong>{confirmDeleteName}</strong>? This action cannot be undone.
+              </p>
+            </div>
+            <div className={styles.modalFooter}>
+              <button className={styles.cancelButton} onClick={() => setConfirmDeleteId(null)}>
+                CANCEL
+              </button>
+              <button
+                className={styles.deleteButton}
+                disabled={deletingId === confirmDeleteId}
+                onClick={async () => {
+                  await handleDelete(confirmDeleteId);
+                  setConfirmDeleteId(null);
+                }}
+              >
+                {deletingId === confirmDeleteId ? "…" : "DELETE"}
               </button>
             </div>
           </div>
