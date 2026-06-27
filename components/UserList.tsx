@@ -49,9 +49,9 @@ export default function UserList() {
 
   useEffect(() => { fetchUsers(); }, []);
 
-  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  async function handleDelete(id: number) {
+  async function handleDelete(id: string) {
     setDeletingId(id);
     const result = await deleteUser(id);
     if (result.success) {
