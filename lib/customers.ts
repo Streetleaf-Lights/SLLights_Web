@@ -34,7 +34,7 @@ export async function postUser(
   role: string,
   customerId?: string,
   customerName?: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const res = await fetch("/api/azure/post-user", {
       method: "POST",
@@ -46,7 +46,8 @@ export async function postUser(
       return { success: false, error: data.error ?? "A user with this email already exists." };
     }
     if (!res.ok) throw new Error(`post-user error ${res.status}`);
-    return { success: true };
+    const data = await res.json();
+    return { success: true, id: data.id };
   } catch (e) {
     console.error("postUser error:", e);
     return { success: false, error: "An unexpected error occurred." };
@@ -66,6 +67,45 @@ export async function deleteUser(id: string): Promise<{ success: boolean; error?
     return { success: true };
   } catch (e) {
     console.error("deleteUser error:", e);
+    return { success: false, error: "An unexpected error occurred." };
+  }
+}
+
+export async function registerUser(
+  token: string,
+  password: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const res = await fetch("/api/azure/register-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, password }),
+    });
+    if (res.status === 404) return { success: false, error: "Invalid registration link." };
+    if (res.status === 409) return { success: false, error: "This account has already been registered." };
+    if (!res.ok) throw new Error(`register-user error ${res.status}`);
+    return { success: true };
+  } catch (e) {
+    console.error("registerUser error:", e);
+    return { success: false, error: "An unexpected error occurred." };
+  }
+}
+
+export async function signIn(
+  email: string,
+  password: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const res = await fetch("/api/azure/sign-in", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) return { success: false, error: data.error ?? "An unexpected error occurred." };
+    return { success: true };
+  } catch (e) {
+    console.error("signIn error:", e);
     return { success: false, error: "An unexpected error occurred." };
   }
 }

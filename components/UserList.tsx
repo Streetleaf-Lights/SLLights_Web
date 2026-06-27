@@ -68,6 +68,7 @@ export default function UserList() {
     const result = await postUser(form.name, form.email, form.role);
     setSubmitting(false);
     if (result.success) {
+      console.log("Created user id:", result.id); // verify matches email token
       setModalOpen(false);
       setForm({ email: "", name: "", role: UserRole.SLAdmin });
       await fetchUsers();
