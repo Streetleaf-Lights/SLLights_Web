@@ -28,6 +28,48 @@ export async function getUsers(): Promise<User[]> {
   }
 }
 
+export async function postUser(
+  name: string,
+  email: string,
+  role: string,
+  customerId?: string,
+  customerName?: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const res = await fetch("/api/azure/post-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, role, customerId, customerName }),
+    });
+    if (res.status === 409) {
+      const data = await res.json();
+      return { success: false, error: data.error ?? "A user with this email already exists." };
+    }
+    if (!res.ok) throw new Error(`post-user error ${res.status}`);
+    return { success: true };
+  } catch (e) {
+    console.error("postUser error:", e);
+    return { success: false, error: "An unexpected error occurred." };
+  }
+}
+
+export async function deleteUser(id: number): Promise<{ success: boolean; error?: string }> {
+  try {
+    const res = await fetch(`/api/azure/delete-user?id=${id}`, {
+      method: "DELETE",
+    });
+    if (res.status === 404) {
+      const data = await res.json();
+      return { success: false, error: data.error ?? "User not found." };
+    }
+    if (!res.ok) throw new Error(`delete-user error ${res.status}`);
+    return { success: true };
+  } catch (e) {
+    console.error("deleteUser error:", e);
+    return { success: false, error: "An unexpected error occurred." };
+  }
+}
+
 export async function getCustomers(): Promise<Customer[]> {
   try {
     const data = await azurePost(apimUrl("/GetCustomers2"), { }) as { value?: Customer[] } | Customer[];

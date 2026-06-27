@@ -74,8 +74,8 @@ export interface Customer {
 }
 
 export enum UserRole {
-  User = "User",
   SLAdmin = "SL Admin",
+  User = "User",
   CustomerAdmin = "Customer Admin",
 }
 
@@ -86,6 +86,7 @@ export enum UserStatus {
 }
 
 export interface User {
+  id: number
   name: string;
   email: string;
   password: string;

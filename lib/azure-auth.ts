@@ -65,3 +65,26 @@ export async function azurePost(url: string, body: unknown, fetchOptions?: Reque
 
   return res.json();
 }
+
+export async function azureDelete(url: string, params?: Record<string, unknown>): Promise<unknown> {
+  const key = getSubscriptionKey();
+
+  const urlWithParams = params
+    ? `${url}?${new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)]))}`
+    : url;
+
+  const res = await fetch(urlWithParams, {
+    method: "DELETE",
+    headers: {
+      "Ocp-Apim-Subscription-Key": key,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Azure API error ${res.status}: ${text}`);
+  }
+
+  return res.json();
+}
