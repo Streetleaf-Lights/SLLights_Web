@@ -1,7 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { registerUser } from "@/lib/customers";
+import { resetPassword } from "@/lib/customers";
 import Link from "next/link";
 
 const SPECIAL_CHAR = /[^a-zA-Z0-9]/;
@@ -28,9 +28,7 @@ function EyeIcon({ open }: { open: boolean }) {
   );
 }
 
-function PasswordInput({
-  value, onChange, placeholder,
-}: {
+function PasswordInput({ value, onChange, placeholder }: {
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
@@ -57,15 +55,15 @@ function PasswordInput({
   );
 }
 
-export default function RegisterForm() {
+export default function ResetPasswordForm() {
   const params = useSearchParams();
   const token = params.get("token");
+  const email = params.get("email");
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
-
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit() {
@@ -73,7 +71,7 @@ export default function RegisterForm() {
     if (err) { setError(err); return; }
     setError(null);
     setLoading(true);
-    const result = await registerUser(token!, password);
+    const result = await resetPassword(email!, token!, password);
     setLoading(false);
     if (!result.success) { setError(result.error ?? "An unexpected error occurred."); return; }
     setSubmitted(true);
@@ -81,50 +79,48 @@ export default function RegisterForm() {
 
   return (
     <main style={{ padding: "40px", maxWidth: "480px", margin: "0 auto" }}>
-      <h1>Complete Registration</h1>
-      {!token ? (
-        <p style={{ color: "#888" }}>Invalid or missing registration link.</p>
+      <h1>Reset Password</h1>
+      {!token || !email ? (
+        <p style={{ color: "#888" }}>Invalid or missing reset link.</p>
       ) : submitted ? (
         <>
-        <p style={{ color: "#00b1ae", marginBottom: "16px" }}>Your password has been set.</p>
-        <Link href="/signin" style={buttonStyle}>
-          Go to Sign In
-        </Link>
+          <p style={{ color: "#00b1ae", marginBottom: "16px" }}>Your password has been reset.</p>
+          <Link href="/signin" style={buttonStyle}>Go to Sign In</Link>
         </>
       ) : (
-        <>  
-        <div style={{ marginBottom: "16px" }}>
-          <label style={labelStyle}>Password</label>
-          <PasswordInput
-            value={password}
-            onChange={v => { setPassword(v); setError(null); }}
-            placeholder="At least 8 characters"
-          />
-        </div>
+        <>
+          <div style={{ marginBottom: "16px" }}>
+            <label style={labelStyle}>New Password</label>
+            <PasswordInput
+              value={password}
+              onChange={v => { setPassword(v); setError(null); }}
+              placeholder="At least 8 characters"
+            />
+          </div>
 
-        <div style={{ marginBottom: "8px" }}>
-          <label style={labelStyle}>Confirm Password</label>
-          <PasswordInput
-            value={confirm}
-            onChange={v => { setConfirm(v); setError(v && password !== v ? "Passwords do not match." : null); }}
-            placeholder="Re-enter password"
-          />
-        </div>
+          <div style={{ marginBottom: "8px" }}>
+            <label style={labelStyle}>Confirm Password</label>
+            <PasswordInput
+              value={confirm}
+              onChange={v => { setConfirm(v); setError(v && password !== v ? "Passwords do not match." : null); }}
+              placeholder="Re-enter password"
+            />
+          </div>
 
-        <ul style={hintStyle}>
-          <li style={{ color: password.length >= 8 ? "#00b1ae" : "#aaa" }}>
-            At least 8 characters
-          </li>
-          <li style={{ color: SPECIAL_CHAR.test(password) ? "#00b1ae" : "#aaa" }}>
-            At least 1 special character (!@#$%...)
-          </li>
-        </ul>
+          <ul style={hintStyle}>
+            <li style={{ color: password.length >= 8 ? "#00b1ae" : "#aaa" }}>
+              At least 8 characters
+            </li>
+            <li style={{ color: SPECIAL_CHAR.test(password) ? "#00b1ae" : "#aaa" }}>
+              At least 1 special character (!@#$%...)
+            </li>
+          </ul>
 
-        {error && <p style={{ color: "#c0392b", fontSize: "13px", marginBottom: "12px" }}>{error}</p>}
+          {error && <p style={{ color: "#c0392b", fontSize: "13px", marginBottom: "12px" }}>{error}</p>}
 
-        <button onClick={handleSubmit} style={buttonStyle}>
-          {loading ? "Setting password…" : "Set Password"}
-        </button>
+          <button onClick={handleSubmit} style={buttonStyle} disabled={loading}>
+            {loading ? "Resetting password…" : "Reset Password"}
+          </button>
         </>
       )}
     </main>

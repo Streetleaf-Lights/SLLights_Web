@@ -5,7 +5,7 @@ import SignOutButton from "./SignOutButton";
 
 export default function SiteNavClient({ isSignedIn }: { isSignedIn: boolean }) {
   const pathname = usePathname();
-  if (["/register", "/signin", "/forgot-password"].includes(pathname)) return null;
+  if (["/register", "/signin", "/forgot-password", "/reset-password"].includes(pathname)) return null;
 
   return (
     <nav className="siteNav" style={{ display: "flex", flexDirection: "column", height: "100%" }}>

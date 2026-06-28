@@ -110,6 +110,26 @@ export async function signIn(
   }
 }
 
+export async function resetPassword(
+  email: string,
+  token: string,
+  password: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const res = await fetch("/api/azure/reset-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, token, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) return { success: false, error: data.error ?? "An unexpected error occurred." };
+    return { success: true };
+  } catch (e) {
+    console.error("resetPassword error:", e);
+    return { success: false, error: "An unexpected error occurred." };
+  }
+}
+
 export async function getCustomers(): Promise<Customer[]> {
   try {
     const data = await azurePost(apimUrl("/GetCustomers2"), { }) as { value?: Customer[] } | Customer[];

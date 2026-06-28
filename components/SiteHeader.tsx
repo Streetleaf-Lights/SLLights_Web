@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 export default function SiteHeader() {
   const pathname = usePathname();
-  const isRegister = ["/register", "/signin", "/forgot-password"].includes(pathname);
+  const isRegister = ["/register", "/signin", "/forgot-password", "/reset-password"].includes(pathname);
 
   const logo = (
     <Image
