@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { azurePost } from "@/lib/azure-auth";
 import { apimUrl } from "@/lib/customers";
 import { createSession } from "@/lib/auth";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();

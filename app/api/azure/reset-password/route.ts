@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { azurePost } from "@/lib/azure-auth";
 import { apimUrl } from "@/lib/customers";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 const SALT_ROUNDS = 12;
 
