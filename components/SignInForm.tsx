@@ -12,6 +12,10 @@ export default function SignInForm() {
   const [emailError, setEmailError] = useState<string | null>(null);
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter") handleSubmit();
+  }
+
   async function handleSubmit() {
     const newEmailError = !email
       ? "Email is required."
@@ -45,6 +49,7 @@ export default function SignInForm() {
           }}
           placeholder="user@example.com"
           style={inputStyle}
+          onKeyDown={handleKeyDown}
         />
         {emailError && <p style={fieldErrorStyle}>{emailError}</p>}
       </div>
@@ -58,6 +63,7 @@ export default function SignInForm() {
             onChange={e => { setPassword(e.target.value); setError(null); }}
             placeholder="Enter your password"
             style={{ ...inputStyle, paddingRight: "40px" }}
+            onKeyDown={handleKeyDown}
           />
           <button
             type="button"

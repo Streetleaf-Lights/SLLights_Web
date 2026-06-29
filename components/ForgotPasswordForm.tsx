@@ -10,6 +10,10 @@ export default function ForgotPasswordForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter") handleSubmit();
+  }
+
   async function handleSubmit() {
     const error = !email
       ? "Email is required."
@@ -58,6 +62,7 @@ export default function ForgotPasswordForm() {
               }}
               placeholder="user@example.com"
               style={inputStyle}
+              onKeyDown={handleKeyDown}
             />
             {emailError && <p style={fieldErrorStyle}>{emailError}</p>}
           </div>

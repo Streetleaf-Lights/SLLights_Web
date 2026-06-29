@@ -62,9 +62,26 @@ export default function UserList() {
     setDeletingId(null);
   }
 
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter") handleSubmit();
+  }
+
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [nameError, setNameError] = useState<string | null>(null);
+
   async function handleSubmit() {
     setSubmitting(true);
     setSubmitError(undefined);
+    const emailErr = !form.email
+      ? "Email is required."
+      : !EMAIL_REGEX.test(form.email)
+      ? "Please enter a valid email address."
+      : null;
+    const nameErr = !form.name.trim() ? "Name is required." : null;
+    setEmailError(emailErr);
+    setNameError(nameErr);
+    if (emailErr || nameErr) { setSubmitting(false); return; }
     const result = await postUser(form.name, form.email, form.role);
     setSubmitting(false);
     if (result.success) {
@@ -81,6 +98,8 @@ export default function UserList() {
     setModalOpen(false);
     setForm({ email: "", name: "", role: UserRole.SLAdmin });
     setSubmitError(undefined);
+    setEmailError(null);
+    setNameError(null);
   }
 
   return (
@@ -165,8 +184,18 @@ export default function UserList() {
                   type="email"
                   placeholder="user@example.com"
                   value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setForm((f) => ({ ...f, email: val }));
+                    setEmailError(val && !EMAIL_REGEX.test(val) ? "Please enter a valid email address." : null);
+                  }}
+                  onKeyDown={handleKeyDown}
                 />
+                {emailError && (
+                  <span style={{ color: "var(--red)", fontSize: "12px", marginTop: "4px", display: "block" }}>
+                    {emailError}
+                  </span>
+                )}
               </div>
               <div className={styles.field}>
                 <label className={styles.fieldLabel}>NAME</label>
@@ -175,8 +204,18 @@ export default function UserList() {
                   type="text"
                   placeholder="Full name"
                   value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setForm((f) => ({ ...f, name: val }));
+                    setNameError(!val.trim() ? "Name is required." : null);
+                  }}
+                  onKeyDown={handleKeyDown}
                 />
+                {nameError && (
+                  <span style={{ color: "var(--red)", fontSize: "12px", marginTop: "4px", display: "block" }}>
+                  {nameError}
+                  </span>
+                )}
               </div>
               <div className={styles.field}>
                 <label className={styles.fieldLabel}>ROLE</label>
@@ -208,7 +247,11 @@ export default function UserList() {
       {/* Confirm Delete Modal */}
       {confirmDeleteId !== null && (
         <div className={styles.modalOverlay} onClick={() => setConfirmDeleteId(null)}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => { if (e.key === "Enter") { handleDelete(confirmDeleteId!); setConfirmDeleteId(null); } }}
+            tabIndex={-1}
+            ref={el => el?.focus()}
+          >
             <div className={styles.modalHeader}>
               <span className={styles.sectionLabel}>DELETE USER</span>
             </div>

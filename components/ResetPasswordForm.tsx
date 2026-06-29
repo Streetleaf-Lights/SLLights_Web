@@ -28,10 +28,11 @@ function EyeIcon({ open }: { open: boolean }) {
   );
 }
 
-function PasswordInput({ value, onChange, placeholder }: {
+function PasswordInput({ value, onChange, placeholder, onKeyDown, }: {
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
+  onKeyDown?: (e: React.KeyboardEvent) => void;
 }) {
   const [visible, setVisible] = useState(false);
   return (
@@ -41,6 +42,7 @@ function PasswordInput({ value, onChange, placeholder }: {
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
+        onKeyDown={onKeyDown}
         style={{ ...inputStyle, paddingRight: "40px" }}
       />
       <button
@@ -65,6 +67,10 @@ export default function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter") handleSubmit();
+  }
 
   async function handleSubmit() {
     const err = validate(password, confirm);
@@ -95,6 +101,7 @@ export default function ResetPasswordForm() {
               value={password}
               onChange={v => { setPassword(v); setError(null); }}
               placeholder="At least 8 characters"
+              onKeyDown={handleKeyDown}
             />
           </div>
 
@@ -104,6 +111,7 @@ export default function ResetPasswordForm() {
               value={confirm}
               onChange={v => { setConfirm(v); setError(v && password !== v ? "Passwords do not match." : null); }}
               placeholder="Re-enter password"
+              onKeyDown={handleKeyDown}
             />
           </div>
 
