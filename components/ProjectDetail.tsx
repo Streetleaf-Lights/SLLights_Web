@@ -107,6 +107,8 @@ export default function ProjectDetail({ customer, project, sessionRole }: Props)
   const [deviceCount, setDeviceCount] = useState<number | null | undefined>(undefined);
   const [isWorkingCount, setIsWorkingCount] = useState<number | null | undefined>(undefined);
   const [devices, setDevices] = useState<Device[] | undefined>(undefined);
+  const PAGE_SIZE = 10;
+  const [polePage, setPolePage] = useState(1);
 
   useEffect(() => {
     getProjectData(project.id).then((data) => {
@@ -126,6 +128,8 @@ export default function ProjectDetail({ customer, project, sessionRole }: Props)
       ? deviceCount - isWorkingCount
       : null;
   const pole_qQuery = searchParams.get("pole_q");
+  const totalPolePages = devices ? Math.max(1, Math.ceil(devices.length / PAGE_SIZE)) : 1;
+  const pagedDevices = devices ? devices.slice((polePage - 1) * PAGE_SIZE, polePage * PAGE_SIZE) : undefined;
   return (
     <div className={styles.page}>
       {/* Top bar */}
@@ -245,7 +249,7 @@ export default function ProjectDetail({ customer, project, sessionRole }: Props)
                     <td colSpan={2} className={styles.empty}>No poles on record.</td>
                   </tr>
                 ) : (
-                  devices.map((device) => (
+                  pagedDevices!.map((device) => (
                     <tr key={device.id}>
                       <td className={styles.poleName}>
                         <Link
@@ -269,8 +273,53 @@ export default function ProjectDetail({ customer, project, sessionRole }: Props)
               </tbody>
             </table>
           </div>
+          {devices && devices.length > 0 && totalPolePages > 1 && (
+            <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "16px" }}>
+              <button onClick={() => setPolePage(1)} disabled={polePage === 1} style={pageButtonStyle}>
+                First (1)
+              </button>
+              <button onClick={() => setPolePage(p => Math.max(1, p - 1))} disabled={polePage === 1} style={pageButtonStyle}>
+                ← Prev
+              </button>
+              {polePage - 2 > 1 && <span style={{ alignSelf: "center", color: "var(--text-dim)", fontSize: "12px" }}>…</span>}
+              {Array.from({ length: totalPolePages }, (_, i) => i + 1)
+                .filter(p => p >= polePage - 2 && p <= polePage + 2)
+                .map(p => (
+                  <button
+                    key={p}
+                    onClick={() => setPolePage(p)}
+                    style={{
+                      ...pageButtonStyle,
+                      background: p === polePage ? "var(--accent)" : "var(--surface)",
+                      color: p === polePage ? "#fff" : "var(--text)",
+                      borderColor: p === polePage ? "var(--accent)" : "var(--border)",
+                      fontWeight: p === polePage ? 700 : 400,
+                    }}
+                  >
+                    {p}
+                  </button>
+                ))}
+              {polePage + 2 < totalPolePages && <span style={{ alignSelf: "center", color: "var(--text-dim)", fontSize: "12px" }}>…</span>}
+                <button onClick={() => setPolePage(p => Math.min(totalPolePages, p + 1))} disabled={polePage === totalPolePages} style={pageButtonStyle}>
+                  Next →
+                </button>
+                <button onClick={() => setPolePage(totalPolePages)} disabled={polePage === totalPolePages} style={pageButtonStyle}>
+                  Last ({totalPolePages})
+                </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+const pageButtonStyle: React.CSSProperties = {
+  padding: "6px 14px",
+  border: "1px solid var(--border)",
+  background: "var(--surface)",
+  color: "var(--text)",
+  borderRadius: "4px",
+  fontSize: "12px",
+  cursor: "pointer",
+};

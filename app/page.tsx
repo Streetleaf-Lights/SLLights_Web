@@ -5,6 +5,6 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const session = await getSession();
-  console.log("Home page session:", session);
+  // console.log("Home page session:", session);
   redirect(session?.role === "Customer Admin" ? "/projects" : "/customers");
 }

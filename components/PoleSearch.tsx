@@ -397,11 +397,11 @@ function PoleCard({ device, committedQuery }: { device: Device; committedQuery: 
   );
 }
 
-function MultiplePolePanel({ devices, committedQuery }: { devices: Device[]; committedQuery: string }) {
+function MultiplePolePanel({ devices, committedQuery, totalRecords }: { devices: Device[]; committedQuery: string; totalRecords: number }) {
   return (
     <div className={styles.panel}>
       <div className={styles.section}>
-        <div className={styles.sectionLabel}>{devices.length} POLES FOUND</div>
+        <div className={styles.sectionLabel}>{totalRecords} POLES FOUND</div>
         <div className={styles.poleGrid}>
           {devices.map((device) => (
             <PoleCard key={device.id} device={device} committedQuery={committedQuery} />
@@ -420,15 +420,13 @@ export default function PoleSearch() {
   const searchParams = useSearchParams();
 
   const [devices, setDevices] = useState<Device[] | undefined>(undefined);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
   const [inputValue, setInputValue] = useState(() => searchParams.get("q") ?? "");
   const [isSearching, setIsSearching] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/azure/devices")
-      .then((res) => res.json())
-      .then((data) => setDevices(data))
-      .catch(() => setDevices([]));
-  }, []);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     if (!searchParams.has("q")) setInputValue("");
@@ -438,14 +436,33 @@ export default function PoleSearch() {
   const submitted = searchParams.has("q");
 
   useEffect(() => {
-    setIsSearching(false);
+    setPage(1); // reset to page 1 on new search
   }, [committedQuery]);
 
-  const matches = submitted && committedQuery.trim().length >= 3 && devices
-    ? devices.filter((d) =>
-        String(d.poleNumber).toLowerCase().includes(committedQuery.trim().toLowerCase())
-      )
-    : [];
+  useEffect(() => {
+    if (!submitted || committedQuery.trim().length < 3) {
+      setDevices(undefined);
+      setTotalRecords(0);
+      setIsSearching(false);
+      return;
+    }
+    setIsSearching(true);
+    fetch("/api/azure/poles-search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: committedQuery.trim(), pageNumber: page, pageSize: PAGE_SIZE }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setDevices(Array.isArray(data?.results) ? data.results : []);
+        setTotalRecords(data?.totalRecords ?? 0);
+      })
+      .catch(() => { setDevices([]); setTotalRecords(0); })
+      .finally(() => setIsSearching(false));
+  }, [committedQuery, page]);
+
+  const matches = submitted && committedQuery.trim().length >= 3 && devices ? devices : [];
+  const totalPages = Math.max(1, Math.ceil(totalRecords / PAGE_SIZE));
 
   function commitSearch(value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -457,12 +474,13 @@ export default function PoleSearch() {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
     setInputValue(value);
-    setIsSearching(true);
-    commitSearch(value);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => commitSearch(value), 300);
   }
 
   function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    clearTimeout(debounceRef.current);
     commitSearch(inputValue);
   }
 
@@ -507,20 +525,89 @@ export default function PoleSearch() {
           </form>
         </div>
 
-        {devices === undefined ? (
-          <div className={styles.empty}>Loading…</div>
-        ) : submitted && committedQuery.trim() && (
+        {submitted && committedQuery.trim() && (
           isSearching
             ? <div className={styles.empty}>Searching…</div>
             : committedQuery.trim().length < 3
               ? <div className={styles.empty}>Enter at least 3 characters to search.</div>
+              : devices === undefined
+                ? <div className={styles.empty}>Searching…</div>
               : matches.length === 0
                 ? <div className={styles.empty}>No matching poles found. Please try a different search.</div>
-                : matches.length === 1
+                : totalRecords === 1
                   ? <SinglePolePanel device={matches[0]} />
-                  : <MultiplePolePanel devices={matches} committedQuery={committedQuery} />
+                  : (
+                    <>
+                      <MultiplePolePanel devices={matches} committedQuery={committedQuery} totalRecords={totalRecords} />
+                      {totalPages > 1 && (
+                        <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "16px" }}>
+                          <button
+                            onClick={() => setPage(1)}
+                            disabled={page === 1}
+                            style={pageButtonStyle}
+                          >
+                            First (1)
+                          </button>
+                          <button
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                            style={pageButtonStyle}
+                          >
+                            ← Prev
+                          </button>
+                          {page - 2 > 1 && (
+                            <span style={{ alignSelf: "center", color: "var(--text-dim)", fontSize: "12px" }}>…</span>
+                          )}
+                          {Array.from({ length: totalPages }, (_, i) => i + 1)
+                            .filter(p => p >= page - 2 && p <= page + 2)
+                            .map(p => (
+                              <button
+                                key={p}
+                                onClick={() => setPage(p)}
+                                style={{
+                                  ...pageButtonStyle,
+                                  background: p === page ? "var(--accent)" : "var(--surface)",
+                                  color: p === page ? "#fff" : "var(--text)",
+                                  borderColor: p === page ? "var(--accent)" : "var(--border)",
+                                  fontWeight: p === page ? 700 : 400,
+                                }}
+                              >
+                                {p}
+                              </button>
+                            ))}
+                          {page + 2 < totalPages && (
+                            <span style={{ alignSelf: "center", color: "var(--text-dim)", fontSize: "12px" }}>…</span>
+                          )}
+                          <button
+                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            disabled={page === totalPages}
+                            style={pageButtonStyle}
+                          >
+                            Next →
+                          </button>
+                          <button
+                            onClick={() => setPage(totalPages)}
+                            disabled={page === totalPages}
+                            style={pageButtonStyle}
+                          >
+                            Last ({totalPages})
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )
         )}
       </div>
     </div>
   );
 }
+
+const pageButtonStyle: React.CSSProperties = {
+  padding: "6px 14px",
+  border: "1px solid var(--border)",
+  background: "var(--surface)",
+  color: "var(--text)",
+  borderRadius: "4px",
+  fontSize: "12px",
+  cursor: "pointer",
+};

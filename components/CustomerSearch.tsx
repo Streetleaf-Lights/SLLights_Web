@@ -140,6 +140,10 @@ function CustomerPanel({ customer, cust_q }: { customer: Customer; cust_q?: stri
   
   const [deviceCountMap, setDeviceCountMap] = useState<Record<string, number | null | undefined>>({});
   const [isWorkingCountMap, setIsWorkingCountMap] = useState<Record<string, number | null | undefined>>({});
+  const PAGE_SIZE = 10;
+  const [projectPage, setProjectPage] = useState(1);
+  const totalProjectPages = Math.max(1, Math.ceil(customer.projects.length / PAGE_SIZE));
+  const pagedProjects = customer.projects.slice((projectPage - 1) * PAGE_SIZE, projectPage * PAGE_SIZE);
 
   useEffect(() => {
     if (customer.projects.length === 0) return;
@@ -251,9 +255,46 @@ function CustomerPanel({ customer, cust_q }: { customer: Customer; cust_q?: stri
         <div className={styles.sectionLabel}>PROJECTS</div>
         {customer.projects.length === 0
           ? <div className={styles.empty}>No projects on record.</div>
-          : <div className={styles.projectGrid}>
-              {customer.projects.map((p) => <ProjectCard key={p.id} project={p} customerId={customer.id} cust_q={cust_q} deviceCount={deviceCountMap[p.id]} isWorkingCount={isWorkingCountMap[p.id]} />)}
-            </div>
+          : <>
+              <div className={styles.projectGrid}>
+                {pagedProjects.map((p) => <ProjectCard key={p.id} project={p} customerId={customer.id} cust_q={cust_q} deviceCount={deviceCountMap[p.id]} isWorkingCount={isWorkingCountMap[p.id]} />)}
+              </div>
+              {totalProjectPages > 1 && (
+                <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "16px" }}>
+                  <button onClick={() => setProjectPage(1)} disabled={projectPage === 1} style={pageButtonStyle}>
+                    First (1)
+                  </button>
+                  <button onClick={() => setProjectPage(p => Math.max(1, p - 1))} disabled={projectPage === 1} style={pageButtonStyle}>
+                    ← Prev
+                  </button>
+                  {projectPage - 2 > 1 && <span style={{ alignSelf: "center", color: "var(--text-dim)", fontSize: "12px" }}>…</span>}
+                  {Array.from({ length: totalProjectPages }, (_, i) => i + 1)
+                    .filter(p => p >= projectPage - 2 && p <= projectPage + 2)
+                    .map(p => (
+                      <button
+                        key={p}
+                        onClick={() => setProjectPage(p)}
+                        style={{
+                          ...pageButtonStyle,
+                          background: p === projectPage ? "var(--accent)" : "var(--surface)",
+                          color: p === projectPage ? "#fff" : "var(--text)",
+                          borderColor: p === projectPage ? "var(--accent)" : "var(--border)",
+                          fontWeight: p === projectPage ? 700 : 400,
+                        }}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                    {projectPage + 2 < totalProjectPages && <span style={{ alignSelf: "center", color: "var(--text-dim)", fontSize: "12px" }}>…</span>}
+                    <button onClick={() => setProjectPage(p => Math.min(totalProjectPages, p + 1))} disabled={projectPage === totalProjectPages} style={pageButtonStyle}>
+                      Next →
+                    </button>
+                    <button onClick={() => setProjectPage(totalProjectPages)} disabled={projectPage === totalProjectPages} style={pageButtonStyle}>
+                      Last ({totalProjectPages})
+                    </button>
+                </div>
+              )}
+            </>
         }
       </div>
     </div>
@@ -356,3 +397,13 @@ export default function CustomerSearch({ customers }: { customers: Customer[] })
     </div>
   );
 }
+
+const pageButtonStyle: React.CSSProperties = {
+  padding: "6px 14px",
+  border: "1px solid var(--border)",
+  background: "var(--surface)",
+  color: "var(--text)",
+  borderRadius: "4px",
+  fontSize: "12px",
+  cursor: "pointer",
+};

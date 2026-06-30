@@ -93,6 +93,10 @@ export default function CustomerDetail({ customer, sessionRole }: { customer: Cu
   const sortedProjects = [...customer.projects].sort((a, b) =>
     String(a.name).localeCompare(String(b.name))
   );
+  const PAGE_SIZE = 10;
+  const [projectPage, setProjectPage] = useState(1);
+  const totalProjectPages = Math.max(1, Math.ceil(sortedProjects.length / PAGE_SIZE));
+  const pagedProjects = sortedProjects.slice((projectPage - 1) * PAGE_SIZE, projectPage * PAGE_SIZE);
   useEffect(() => {
     if (sortedProjects.length === 0) return;
     setDeviceCountMap({});
@@ -237,14 +241,61 @@ export default function CustomerDetail({ customer, sessionRole }: { customer: Cu
           {sortedProjects.length === 0 ? (
             <div className={styles.empty}>No projects on record.</div>
           ) : (
+            <>
             <div className={styles.projectGrid}>
-              {sortedProjects.map((p) => (
+              {pagedProjects.map((p) => (
                 <ProjectCard key={p.id} project={p} customerId={customer.id} cust_q={cust_qQuery ?? undefined} pole_q={pole_qQuery ?? undefined} deviceCount={deviceCountMap[p.id]} isWorkingCount={isWorkingCountMap[p.id]} />
               ))}
             </div>
+            {totalProjectPages > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "16px" }}>
+                <button onClick={() => setProjectPage(1)} disabled={projectPage === 1} style={pageButtonStyle}>
+                  First (1)
+                </button>
+                <button onClick={() => setProjectPage(p => Math.max(1, p - 1))} disabled={projectPage === 1} style={pageButtonStyle}>
+                  ← Prev
+                </button>
+                {projectPage - 2 > 1 && <span style={{ alignSelf: "center", color: "var(--text-dim)", fontSize: "12px" }}>…</span>}
+                {Array.from({ length: totalProjectPages }, (_, i) => i + 1)
+                  .filter(p => p >= projectPage - 2 && p <= projectPage + 2)
+                  .map(p => (
+                    <button
+                      key={p}
+                      onClick={() => setProjectPage(p)}
+                      style={{
+                        ...pageButtonStyle,
+                        background: p === projectPage ? "var(--accent)" : "var(--surface)",
+                        color: p === projectPage ? "#fff" : "var(--text)",
+                        borderColor: p === projectPage ? "var(--accent)" : "var(--border)",
+                        fontWeight: p === projectPage ? 700 : 400,
+                      }}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                {projectPage + 2 < totalProjectPages && <span style={{ alignSelf: "center", color: "var(--text-dim)", fontSize: "12px" }}>…</span>}
+                <button onClick={() => setProjectPage(p => Math.min(totalProjectPages, p + 1))} disabled={projectPage === totalProjectPages} style={pageButtonStyle}>
+                  Next →
+                </button>
+                <button onClick={() => setProjectPage(totalProjectPages)} disabled={projectPage === totalProjectPages} style={pageButtonStyle}>
+                  Last ({totalProjectPages})
+                </button>
+              </div>
+            )}
+            </>
           )}
         </section>
       </div>
     </div>
   );
 }
+
+const pageButtonStyle: React.CSSProperties = {
+  padding: "6px 14px",
+  border: "1px solid var(--border)",
+  background: "var(--surface)",
+  color: "var(--text)",
+  borderRadius: "4px",
+  fontSize: "12px",
+  cursor: "pointer",
+};

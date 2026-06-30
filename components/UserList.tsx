@@ -16,6 +16,10 @@ const STATUS_COLOR: Record<UserStatus, string> = {
 export default function UserList({ sessionRole }: { sessionRole: string }) {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const PAGE_SIZE = 10;
+  const [userPage, setUserPage] = useState(1);
+  const totalUserPages = Math.max(1, Math.ceil(users.length / PAGE_SIZE));
+  const pagedUsers = users.slice((userPage - 1) * PAGE_SIZE, userPage * PAGE_SIZE);
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState({ email: "", name: "", role: UserRole.SLAdmin });
 
@@ -75,6 +79,7 @@ export default function UserList({ sessionRole }: { sessionRole: string }) {
         customerId: u.CustomerId ?? u.customerId ?? "",
         customerName: u.CustomerName ?? u.customerName ?? "",
       })));
+      setUserPage(1);
     } catch (e) {
       console.error("fetchUsers error:", e);
       setUsers([]);
@@ -187,7 +192,7 @@ export default function UserList({ sessionRole }: { sessionRole: string }) {
                 ) : users.length === 0 ? (
                   <tr><td colSpan={6} className={styles.empty}>No users found.</td></tr>
                 ) : (
-                  users.map((user, i) => (
+                  pagedUsers.map((user, i) => (
                     <tr key={i}>
                       <td>{user.name}</td>
                       <td>{user.email}</td>
@@ -213,6 +218,41 @@ export default function UserList({ sessionRole }: { sessionRole: string }) {
               </tbody>
             </table>
           </div>
+          {!loading && users.length > 0 && totalUserPages > 1 && (
+            <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "16px" }}>
+              <button onClick={() => setUserPage(1)} disabled={userPage === 1} style={pageButtonStyle}>
+                First (1)
+              </button>
+              <button onClick={() => setUserPage(p => Math.max(1, p - 1))} disabled={userPage === 1} style={pageButtonStyle}>
+                ← Prev
+              </button>
+              {userPage - 2 > 1 && <span style={{ alignSelf: "center", color: "var(--text-dim)", fontSize: "12px" }}>…</span>}
+              {Array.from({ length: totalUserPages }, (_, i) => i + 1)
+                .filter(p => p >= userPage - 2 && p <= userPage + 2)
+                .map(p => (
+                  <button
+                    key={p}
+                    onClick={() => setUserPage(p)}
+                    style={{
+                      ...pageButtonStyle,
+                      background: p === userPage ? "var(--accent)" : "var(--surface)",
+                      color: p === userPage ? "#fff" : "var(--text)",
+                      borderColor: p === userPage ? "var(--accent)" : "var(--border)",
+                      fontWeight: p === userPage ? 700 : 400,
+                    }}
+                  >
+                    {p}
+                  </button>
+                ))}
+              {userPage + 2 < totalUserPages && <span style={{ alignSelf: "center", color: "var(--text-dim)", fontSize: "12px" }}>…</span>}
+              <button onClick={() => setUserPage(p => Math.min(totalUserPages, p + 1))} disabled={userPage === totalUserPages} style={pageButtonStyle}>
+                Next →
+              </button>
+              <button onClick={() => setUserPage(totalUserPages)} disabled={userPage === totalUserPages} style={pageButtonStyle}>
+                Last ({totalUserPages})
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -408,4 +448,14 @@ const dropdownItemStyle: React.CSSProperties = {
   fontSize: "13px",
   cursor: "pointer",
   color: "var(--text)",
+};
+
+const pageButtonStyle: React.CSSProperties = {
+  padding: "6px 14px",
+  border: "1px solid var(--border)",
+  background: "var(--surface)",
+  color: "var(--text)",
+  borderRadius: "4px",
+  fontSize: "12px",
+  cursor: "pointer",
 };
