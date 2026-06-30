@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
     name:  user.name,
     email: user.email,
     role:  user.role,
+    customerId: user.customerId ?? "",
   });
 
   return NextResponse.json({ success: true }, { status: 200 });

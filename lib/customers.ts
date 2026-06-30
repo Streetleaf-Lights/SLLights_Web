@@ -182,6 +182,16 @@ export async function getDevices(): Promise<Device[]> {
   }
 }
 
+export async function getDevicesByCustomer(customerId: string): Promise<Device[]> {
+  try {
+    const data = await azurePost(apimUrl("/GetDevicesByCustomer"), { customerId }, { cache: "no-store" }) as { value?: Device[] } | Device[];
+    return Array.isArray(data) ? data : (data as { value?: Device[] }).value ?? [];
+  } catch (e) {
+    console.error("getDevicesByCustomer error:", e);
+    return [];
+  }
+}
+
 export async function getDeviceData(deviceId: string): Promise<Device & Record<string, unknown>> {
   try {
     const res = await fetch("/api/azure/device-data", {

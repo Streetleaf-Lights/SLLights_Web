@@ -81,7 +81,7 @@ function ProjectCard({ project, customerId, cust_q, pole_q, deviceCount, isWorki
   );
 }
 
-export default function CustomerDetail({ customer }: { customer: Customer }) {
+export default function CustomerDetail({ customer, sessionRole }: { customer: Customer; sessionRole: string }) {
   const searchParams = useSearchParams();
   const cust_qQuery = searchParams.get("cust_q");
   const backHref = cust_qQuery
@@ -132,45 +132,41 @@ export default function CustomerDetail({ customer }: { customer: Customer }) {
   return (
     <div className={styles.page}>
       {/* Top bar */}
-      <header className={styles.topbar}>
-        <div className={styles.breadcrumb}>
-          {cust_qQuery && (
-            <>
-            <span className={styles.navText}>
-              <span className={styles.accent}>◈</span> CUSTOMERS
-            </span>
-            <Link
-              href={backHref}
-              className={styles.back}
-            >
-              ← Customer Search: "{cust_qQuery}"
-            </Link>
-            </>
+      {!(sessionRole === "Customer Admin" && !pole_qQuery) && (
+        <header className={styles.topbar}>
+          {sessionRole !== "Customer Admin" && (
+            <div className={styles.breadcrumb}>
+              {cust_qQuery && (
+                <>
+                <span className={styles.navText}>
+                  <span className={styles.accent}>◈</span> CUSTOMERS
+                </span>
+                <Link
+                  href={backHref}
+                  className={styles.back}
+                >
+                  ← Customer Search: "{cust_qQuery}"
+                </Link>
+                </>
+              )}
+            </div>
           )}
-          <div className={styles.topbarRight}>
-            {customer.tier && (
-              <span className={styles.tierBadge} style={{ color: TIER_COLOR[customer.tier] ?? "var(--text-muted)", borderColor: TIER_COLOR[customer.tier] ?? "var(--border)" }}>
-                {customer.tier.toUpperCase()}
+
+          {pole_qQuery && (
+            <div className={styles.breadcrumb} style={{ borderTop: sessionRole !== "Customer Admin" && cust_qQuery ? "1px solid var(--border)" : undefined, paddingTop: sessionRole !== "Customer Admin" && cust_qQuery ? "10px" : undefined }}>
+              <span className={styles.navText}>
+                <span className={styles.accent}>◈</span> POLES
               </span>
-            )}
-          </div>
-        </div>
-        
-        {pole_qQuery && (
-        <div className={styles.breadcrumb} style={{ borderTop: cust_qQuery ? "1px solid var(--border)" : undefined, paddingTop: cust_qQuery ? "10px" : undefined }}>
-          <span className={styles.navText}>
-            <span className={styles.accent}>◈</span> POLES
-          </span>
-          <Link
-            href={`/poles?q=${encodeURIComponent(pole_qQuery)}`}
-            className={styles.back}
-          >
-            ← Pole Search: "{pole_qQuery}"
-          </Link>
-          </div>
-        )}
-        
-      </header>
+              <Link
+                href={`/poles?q=${encodeURIComponent(pole_qQuery)}`}
+                className={styles.back}
+              >
+                ← Pole Search: "{pole_qQuery}"
+              </Link>
+            </div>
+          )}
+        </header>
+      )}
 
       {/* Hero */}
       <div className={styles.hero}>

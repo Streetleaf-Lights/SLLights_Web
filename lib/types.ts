@@ -74,9 +74,9 @@ export interface Customer {
 }
 
 export enum UserRole {
-  SLAdmin = "SL Admin",
-  User = "User",
+  SLAdmin       = "SL Admin",
   CustomerAdmin = "Customer Admin",
+  User          = "User",
 }
 
 export enum UserStatus {

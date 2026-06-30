@@ -7,12 +7,15 @@ import { getCustomers } from "@/lib/customers";
 import ProjectDetail from "@/components/ProjectDetail";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { getSession } from "@/lib/auth";
 
 export default async function ProjectPage({
   params,
 }: {
   params: { customerId: string; projectId: string };
 }) {
+  const session = await getSession();
+  // console.log("ProjectPage session:", session);
   const customers = await getCustomers();
   const customer = customers.find((c) => c.id === params.customerId);
   if (!customer) notFound();
@@ -22,7 +25,7 @@ export default async function ProjectPage({
 
   return (
       <Suspense fallback="Loading...">
-        <ProjectDetail customer={customer} project={project} />
+        <ProjectDetail customer={customer} project={project} sessionRole={session?.role ?? ""} />
       </Suspense>
     );
 }

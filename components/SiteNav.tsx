@@ -3,5 +3,5 @@ import SiteNavClient from "./SiteNavClient";
 
 export default async function SiteNav() {
   const session = await getSession();
-  return <SiteNavClient isSignedIn={!!session} />;
+  return <SiteNavClient isSignedIn={!!session} role={session?.role ?? ""} />;
 }

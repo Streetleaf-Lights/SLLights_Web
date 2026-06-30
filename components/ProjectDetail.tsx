@@ -20,6 +20,7 @@ function workingPctColor(pct: number): string {
 interface Props {
   customer: Customer;
   project: Project;
+  sessionRole: string;
 }
 
 function PolesMap({ devices }: { devices: Device[] }) {
@@ -96,7 +97,7 @@ function PolesMap({ devices }: { devices: Device[] }) {
   );
 }
 
-export default function ProjectDetail({ customer, project }: Props) {
+export default function ProjectDetail({ customer, project, sessionRole }: Props) {
   const statusColor = STATUS_COLOR[project.status] ?? "var(--text-dim)";
   const searchParams = useSearchParams();
   const cust_qQuery = searchParams.get("cust_q");
@@ -128,46 +129,45 @@ export default function ProjectDetail({ customer, project }: Props) {
   return (
     <div className={styles.page}>
       {/* Top bar */}
-      <header className={styles.topbar}>
-        <div className={styles.breadcrumb}>
-          {cust_qQuery && (
-            <>
-            <span className={styles.navText}>
-              <span className={styles.accent}>◈</span> CUSTOMERS
-            </span>
-            <Link
-              href={backHref}
-              className={styles.crumbLink}
-            >
-              ← Customer Search: "{cust_qQuery}"
-            </Link>
-            </>
+      {!(sessionRole === "Customer Admin" && !pole_qQuery) && (
+        <header className={styles.topbar}>
+          {sessionRole !== "Customer Admin" && (
+            <div className={styles.breadcrumb}>
+              {cust_qQuery && (
+                <>
+                  <span className={styles.navText}>
+                    <span className={styles.accent}>◈</span> CUSTOMERS
+                  </span>
+                  <Link href={backHref} className={styles.crumbLink}>
+                    ← Customer Search: "{cust_qQuery}"
+                  </Link>
+                </>
+              )}
+              <span className={styles.crumbSep}>›</span>
+              <Link
+                href={`/customers/${customer.id}${cust_qQuery ? `?cust_q=${encodeURIComponent(cust_qQuery)}` : ""}${pole_qQuery ? `${cust_qQuery ? "&" : "?"}pole_q=${encodeURIComponent(pole_qQuery)}` : ""}`}
+                className={styles.crumbLink}
+              >
+                {customer.name}
+              </Link>
+            </div>
           )}
-          <span className={styles.crumbSep}>›</span>
-          <Link
-            href={`/customers/${customer.id}${cust_qQuery ? `?cust_q=${encodeURIComponent(cust_qQuery)}` : ""}${pole_qQuery ? `${cust_qQuery ? "&" : "?"}pole_q=${encodeURIComponent(pole_qQuery)}` : ""}`}
-            className={styles.crumbLink}
-          >
-            {customer.name}
-          </Link>
-          <span className={styles.crumbSep}>›</span>
-          <span className={styles.crumbCurrent}>{project.name}</span>
-        </div>
-        {pole_qQuery && (
-          <div className={styles.breadcrumb} style={{ borderTop: "1px solid var(--border)", paddingTop: "10px" }}>
-            <span className={styles.navText}>
-              <span className={styles.accent}>◈</span> POLES
-            </span>
+
+          {pole_qQuery && (
+            <div className={styles.breadcrumb} style={{ borderTop: sessionRole !== "Customer Admin" ? "1px solid var(--border)" : undefined, paddingTop: sessionRole !== "Customer Admin" ? "10px" : undefined }}>
+              <span className={styles.navText}>
+                <span className={styles.accent}>◈</span> POLES
+              </span>
               <Link
                 href={`/poles?q=${encodeURIComponent(pole_qQuery)}`}
                 className={styles.crumbLink}
               >
                 ← Pole Search: "{pole_qQuery}"
               </Link>
-          </div>
-        )}
-      </header>
-
+            </div>
+          )}
+        </header>
+      )}
       <div className={styles.body}>
         {/* Hero */}
         <div className={styles.hero}>

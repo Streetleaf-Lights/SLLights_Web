@@ -1,7 +1,8 @@
 import { getUsers } from "@/lib/customers";
 import UserList from "@/components/UserList";
+import { getSession } from "@/lib/auth";
 
 export default async function UsersPage() {
-  const users = await getUsers();
-  return <UserList />;
+  const session = await getSession();
+  return <UserList sessionRole={session?.role ?? ""} />;
 }

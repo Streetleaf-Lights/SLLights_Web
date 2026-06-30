@@ -281,10 +281,6 @@ export default function PoleDetail({ customer, project, poleId }: Props) {
           >
             {project.name}
           </Link>
-          <span className={styles.crumbSep}>›</span>
-          <span className={styles.crumbCurrent}>
-            {isLoading ? "…" : poleName}
-          </span>
         </div>
         {pole_qQuery && (
           <div className={styles.breadcrumb} style={{ borderTop: "1px solid var(--border)", paddingTop: "10px" }}>
