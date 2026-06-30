@@ -30,7 +30,7 @@ export default function SignInForm() {
     const result = await signIn(email, password);
     setLoading(false);
     if (!result.success) { setError(result.error ?? "An unexpected error occurred."); return; }
-    window.location.href = "/customers";
+    window.location.href = "/";
   }
 
   return (
